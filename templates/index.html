@@ -70,6 +70,8 @@
 
 			<!-- Formulaire de publication d'annonce -->
 
+
+
 <form id="publication-form"> 
 	<div class="row gtr-uniform gtr-50">
 
@@ -79,16 +81,16 @@
 
 		<div class="col-12">
 			<textarea name="description" id="description"
-				placeholder="Description de l'opportunité ou contenu de la publication" rows="6"
+				placeholder="Description de l'opportunité ou contenu" rows="6"
 				required></textarea>
 		</div>
 
-		<div class="col-6 col-12-small">
-			<input type="text" name="contact" id="contact" placeholder="Contact (email ou téléphone)" />
+		<div class="col-12">
+			<input type="text" name="lien" id="lien" placeholder="Lien officiel pour postuler / source" required />
 		</div>
 
-		<div class="col-6 col-12-small">
-			<input type="text" name="lieu" id="lieu" placeholder="Lieu (Ville/Pays)" />
+		<div class="col-12">
+			<input type="text" name="contact" id="contact" placeholder="Contact (email / téléphone)" required />
 		</div>
 
 		<div class="col-12">
@@ -102,6 +104,7 @@
 </form>
 
 <p id="message" style="margin-top:10px; font-weight:bold;"></p>
+
 
 
 
@@ -185,48 +188,84 @@
 
 
 
+
+
+
+
+
+
+
+
 <script>
-	const form = document.getElementById("publication-form");
+const form = document.getElementById("publication-form");
+const messageEl = document.getElementById("message");
 
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault();
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-		const data = {
-			titre: document.getElementById("titre").value,
-			description: document.getElementById("description").value,
-			contact: document.getElementById("contact").value || "non spécifié",
-			lieu: document.getElementById("lieu").value || "non spécifié"
-		};
+    // Récupérer les valeurs
+    const titre = document.getElementById("titre").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const lien = document.getElementById("lien").value.trim();
+    const contact = document.getElementById("contact").value.trim();
 
-		try {
-			const response = await fetch("/api/publier-annonce", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data)
-			});
+    // Validation côté front
+    if (!titre) {
+        messageEl.innerText = "⚠️ Veuillez saisir un titre";
+        return;
+    }
 
-			const result = await response.json();
+    if (!description) {
+        messageEl.innerText = "⚠️ Veuillez saisir une description";
+        return;
+    }
 
-			document.getElementById("message").innerText = result.message + " ✅";
+    if (!lien) {
+        messageEl.innerText = "⚠️ Veuillez saisir un lien pour postuler";
+        return;
+    }
 
-			form.reset(); // Vide le formulaire 👍
-		} catch (err) {
-			document.getElementById("message").innerText = "Erreur, réessaie ❌";
-		}
-	});
+    if (!lien.match(/^https?:\/\/.+/)) {
+        messageEl.innerText = "⚠️ Le lien doit commencer par http:// ou https://";
+        return;
+    }
+
+    if (!contact) {
+        messageEl.innerText = "⚠️ Veuillez saisir un contact (email ou numéro)";
+        return;
+    }
+
+    // Validation simple contact : email ou numéro
+    const contactPattern = /^([+]?[\d]{7,15}|[\w.-]+@[\w.-]+\.\w{2,})$/;
+    if (!contactPattern.test(contact)) {
+        messageEl.innerText = "⚠️ Contact invalide : entrez un email ou un numéro valide";
+        return;
+    }
+
+    // Préparer les données à envoyer
+    const data = { titre, description, lien, contact };
+
+    try {
+        const response = await fetch("/api/publier-annonce", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            messageEl.innerText = "✅ Annonce publiée avec succès !";
+            form.reset();
+        } else {
+            messageEl.innerText = `❌ Erreur : ${result.detail || result.message}`;
+        }
+    } catch (err) {
+        messageEl.innerText = "❌ Erreur serveur, réessaie plus tard";
+        console.error(err);
+    }
+});
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

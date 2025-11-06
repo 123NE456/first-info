@@ -3133,7 +3133,7 @@ input, select, textarea {
 		}
 
 	body.is-preload #header:after {
-		opacity: 1;
+		opacity: 0;
 	}
 
 /* Footer */

@@ -1,0 +1,23 @@
+[
+    {
+        "titre": "ss",
+        "description": "dd",
+        "lien": "http://127.0.0.1:8000/",
+        "date_limite": "2025-11-06",
+        "date_publication": "2025-11-06"
+    },
+    {
+        "titre": "sw",
+        "description": "ss",
+        "lien": "http://127.0.0.1:8000/",
+        "contact": "ww",
+        "date_publication": "2025-11-06"
+    },
+    {
+        "titre": "w",
+        "description": "s",
+        "lien": "http://127.0.0.1:8000/",
+        "contact": "jjd@gmail.bg",
+        "date_publication": "2025-11-06"
+    }
+]
